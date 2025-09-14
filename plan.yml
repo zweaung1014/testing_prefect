@@ -1,0 +1,70 @@
+run:
+  experiment_id: LLE-2025-09-13
+  operator: "Your Name"
+  replicates: 1
+  randomize_order: false
+  notes: "Initial test run"
+
+samples:
+  - sample_id: S1
+
+    # 1) PREPARE SOLUTION
+    prepare_solution_in:
+      amount_crude_solution_mL: 2.0
+      amount_dichloromethane_mL: 5.0
+      amount_aqueous_solution_mL: 5.0
+      amount_aqueous_to_dispense_mL: 5.0
+      pos_crude_solution: "Rack1_A1"
+      pos_dichloromethane: "Rack1_B1"
+      pos_aqueous_solution: "Rack1_C1"
+      pos_extraction_vial: "EasyMax_Vial_1"
+
+    # 2) INITIATE EXTRACTION
+    initiate_extraction_in:
+      stirring_speed_rpm: 600
+      stirring_duration_s: 180
+      pos_extraction_vial: "EasyMax_Vial_1"
+      easymax_location: "EasyMax_Unit_1"
+      separation_time_s: 300
+      easymax_temperature_C: 25.0
+
+    # 3) PREP HPLC VIALS
+    prep_hplc_vials_in:
+      pos_extraction_vial_in_easymax: "EasyMax_Vial_1"
+      pos_aqueous_vial: "HPLC_Rack_A1"
+      pos_organic_vial: "HPLC_Rack_B1"
+      amount_aqueous_phase_mL: 3.0
+      amount_methanol_in_aq_vial_mL: 1.0
+      amount_organic_phase_mL: 3.0
+      amount_methanol_in_or_vial_mL: 1.0
+      amount_TMB_in_aq_mL: 0.1
+      amount_TMB_in_or_mL: 0.1
+      pos_TMB: "ReagentRack_C1"
+
+    # 4) START HPLC ANALYSIS
+    start_hplc_analysis_in:
+      pos_aq_vial_initial: "HPLC_Rack_A1"
+      pos_or_vial_initial: "HPLC_Rack_B1"
+      pos_aq_vial_hplc: "HPLC_Tray_AQ"
+      pos_or_vial_hplc: "HPLC_Tray_OR"
+      hplc_run_length_min: 10.0
+      acetonitrile_percent: 60.0
+      sample_injection_volume_uL: 5.0
+
+    # 5) RUN BAYESIAN OPTIMIZATION MODEL (optional seed values)
+    bo_in:
+      composition_V_over_V: "50:50"
+      stirring_speed_rpm: 600
+      stirring_duration_s: 180
+      temperature_C: 25.0
+      pH: 7.0
+      aqueous_solution_kind: "neutral"
+
+      # Performance metrics (normally filled automatically after analysis,
+      # but you can pre-seed if re-running BO independently)
+      recovery_aq_pct: null
+      purity_aq_pct: null
+      recovery_or_pct: null
+      purity_or_pct: null
+      separation: null
+      partition_coefficient_PC: null
