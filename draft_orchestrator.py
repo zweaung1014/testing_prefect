@@ -1,9 +1,3 @@
-"""
-LLE Orchestration — Prefect UI Demo
-- Every high-level workflow is a @flow (so you see them in the UI).
-- process_sample and lle_pipeline are also @flow.
-- Each workflow sleeps for 2s and returns stub outputs.
-"""
 from operations import Operations
 from __future__ import annotations
 from typing import Optional, Tuple, List, Dict, Any
