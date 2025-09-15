@@ -4,7 +4,7 @@ LLE Orchestration — Prefect UI Demo
 - process_sample and lle_pipeline are also @flow.
 - Each workflow sleeps for 2s and returns stub outputs.
 """
-
+from operations import Operations
 from __future__ import annotations
 from typing import Optional, Tuple, List, Dict, Any
 import uuid
@@ -18,6 +18,8 @@ try:
 except Exception:
     from pydantic.v1 import BaseModel, PositiveFloat, conint, confloat
 
+# Initialize operations class
+operations = Operations()
 
 # -----------------------
 # Run metadata
@@ -151,10 +153,140 @@ def prepare_solution(inputs: PrepareSolutionIn) -> PrepareSolutionOut:
     logger = get_run_logger()
     logger.info("Prepare solution started")
     time.sleep(2)
+
+    # Initialize deck
+    operations.initialize_deck()
+    operations.hold(1) # wait 1 min
+    operations.heat() # specify heat
+
+    # Move vial to scale
+    operations.move_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_tray,
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale
+    )
+
+    # Weigh the empty vial
+    operations.weigh_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_extraction_vial,
+        "Empty vial"
+    )
+
+    # Move extraction vial back to its position
+    operations.move_container(
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale,
+        PrepareSolutionIn.pos_crude_solution,
+        PrepareSolutionIn.type_extraction_tray
+    )
+
+    # Put the crude solution in extraction vial
+    operations.charge_liquid(
+        PrepareSolutionIn.amount_crude_solution_mL,
+        PrepareSolutionIn.type_crude_solution_mL,
+        PrepareSolutionIn.pos_crude_solution,
+        PrepareSolutionIn.type_extraction_vial,
+        PrepareSolutionIn.pos_extraction_vial
+    )
+
+    # Move vial to scale
+    operations.move_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_tray,
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale
+    )
+
+    # Weigh vial with crude
+    operations.weigh_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_extraction_vial,
+        "Vial with crude"
+    )
+
+    # Move extraction vial back to its position
+    operations.move_container(
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale,
+        PrepareSolutionIn.pos_crude_solution,
+        PrepareSolutionIn.type_extraction_tray
+    )
+    
+    # Put dichloromethane in extraction vial
+    operations.charge_liquid(
+        PrepareSolutionIn.amount_dichloromethane_mL,
+        PrepareSolutionIn.type_dichloromethane_mL,
+        PrepareSolutionIn.pos_dichloromethane,
+        PrepareSolutionIn.type_extraction_vial,
+        PrepareSolutionIn.pos_extraction_vial
+    )
+
+    # Move vial to scale
+    operations.move_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_tray,
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale
+    )
+
+    # Weight vial with crude + dichloromethane
+    operations.weigh_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_extraction_vial,
+        "Vial with crude+dichloromethane"
+    )
+
+    # Move extraction vial back to its position
+    operations.move_container(
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale,
+        PrepareSolutionIn.pos_crude_solution,
+        PrepareSolutionIn.type_extraction_tray
+    )
+
+    # Put aqueous solution in extraction vial
+    operations.charge_liquid(
+        PrepareSolutionIn.amount_aqueous_solution_mL,
+        PrepareSolutionIn.type_aqueous_solution_mL,
+        PrepareSolutionIn.pos_aqueous_solution,
+        PrepareSolutionIn.type_extraction_vial,
+        PrepareSolutionIn.pos_extraction_vial
+    )
+
+    # Move vial to scale
+    operations.move_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_tray,
+        PrepareSolutionIn.weigh_scale,
+        PrepareSolutionIn.type_weigh_scale
+    )
+
+    # Weigh vial with crude + dichloromethane + aqueous
+    operations.weigh_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_extraction_vial,
+        "Vial with crude+dichloromethane+aq"
+    )
+
+    """
+    Insert the process for reading pH with the pH unit.
+    put it back in original position and extract a sample for pH unit
+    """
+
+    # Move extraction vial to EasyMax
+    operations.move_container(
+        PrepareSolutionIn.pos_extraction_vial,
+        PrepareSolutionIn.type_tray,
+        PrepareSolutionIn.pos_reactor,
+        PrepareSolutionIn.reactor_tray_type
+    )
+
     return PrepareSolutionOut(
-        weight_crude_dispensed_g=inputs.amount_crude_solution_mL * 1.0,
-        weight_dcm_dispensed_g=inputs.amount_dichloromethane_mL * 1.33,
-        weight_aqueous_dispensed_g=inputs.amount_aqueous_solution_mL * 1.0,
+        weight_crude_dispensed_g=operations.trays[""][""],
+        weight_dcm_dispensed_g=operations.trays[""][""],
+        weight_aqueous_dispensed_g=operations.trays[""][""],
         pH_measurement=None,
     )
 
