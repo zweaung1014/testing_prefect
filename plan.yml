@@ -1,6 +1,6 @@
 run:
   experiment_id: LLE-2025-09-13
-  operator: "Your Name"
+  operator: "Zwe Min Htet Aung"
   replicates: 1
   randomize_order: false
   notes: "Initial test run"
